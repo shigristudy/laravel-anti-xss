@@ -11,15 +11,20 @@ class RegexCleaner extends BaseCleaner
         }
 
         // Handle base64 data
-        if (preg_match('/data\s*:[^\n]*?base64[^\n]*?,([^"\'\n]*)/i', $str)) {
+        if (preg_match('/data\s*:[^\n]*?base64[^\n]*?,([^"\'
+]*)/i', $str)) {
             $this->xssFound = true;
-            $str = preg_replace('/data\s*:[^\n]*?base64[^\n]*?,([^"\'\n]*)/i', '', $str);
+            $str = preg_replace('/data\s*:[^\n]*?base64[^\n]*?,([^"\'
+]*)/i', '', $str);
         }
 
-        // Handle javascript protocol
-        if (preg_match('/javascript\s*:/i', $str)) {
+        // Handle javascript protocol with various obfuscation techniques
+        if (preg_match('/j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:/i', $str) ||
+            preg_match('/javascript[\s\t\x00-\x20]*:/i', $str)) {
             $this->xssFound = true;
-            $str = preg_replace('/javascript\s*:/i', ':', $str);
+            $str = preg_replace('/j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:[^\n]*/i', ':alert(1)', $str);
+            $str = preg_replace('/javascript[\s\t\x00-\x20]*:[^\n]*/i', ':alert(1)', $str);
+            return $str;
         }
 
         // Handle document.location patterns

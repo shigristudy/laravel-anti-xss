@@ -51,6 +51,10 @@ class AttributeCleanerTest extends BaseCaseTest
             "<div style='evil'>text</div>" => '<div >text</div>',
             '<div style=evil>text</div>' => '<div >text</div>',
             '<div STYLE="evil">text</div>' => '<div >text</div>',
+            '<div style="url(\'javascript:alert(1)\')">text</div>' => '<div >text</div>',
+            '<div style="width: \nexpression(alert(1));">text</div>' => '<div >text</div>',
+            '<div style="background:\n url (javascript:ooxx);">text</div>' => '<div >text</div>',
+            '<div style="background:url (javascript:ooxx);">text</div>' => '<div >text</div>',
         ];
 
         foreach ($tests as $input => $expected) {
